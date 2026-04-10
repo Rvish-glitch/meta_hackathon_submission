@@ -18,19 +18,19 @@ tasks:
     difficulty: easy
     description: Classify 10 emails by priority (urgent/normal/low) and category (action_required/fyi/spam/newsletter)
     max_steps: 1
-    reward_range: [-1.0, 1.0]
+    reward_range: [0.001, 0.999]
 
   - id: data_cleaning
     difficulty: medium
     description: Fix a messy CSV with nulls, type errors, duplicates, inconsistent casing, and outliers
     max_steps: 10
-    reward_range: [0.0, 1.0]
+    reward_range: [0.001, 0.999]
 
   - id: code_review
     difficulty: hard
     description: Review a Python PR diff with 5 seeded bugs (SQL injection, off-by-one, mutable default, missing auth, division by zero)
     max_steps: 15
-    reward_range: [-1.0, 1.0]
+    reward_range: [0.001, 0.999]
 
 environment:
   python: ">=3.10"

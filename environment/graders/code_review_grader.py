@@ -77,6 +77,7 @@ class CodeReviewGrader:
                 breakdown[f"{bug_id}_missed"] = 0.0
                 messages.append(f"{bug_id}: missed (0)")
 
+        _EPS = 0.001
         max_possible = len(self._bugs) * 0.20  # 5 * 0.20 = 1.0
-        normalised = max(0.0, min(1.0, total / max_possible))
+        normalised = max(_EPS, min(1.0 - _EPS, total / max_possible))
         return round(normalised, 4), breakdown, " | ".join(messages)

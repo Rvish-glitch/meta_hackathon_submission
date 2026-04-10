@@ -76,6 +76,9 @@ class EmailTriageGrader:
                 breakdown[eid] = -0.02
                 messages.append(f"{eid}: phantom email")
 
-        # Normalise: max possible raw = 0.8, scale to 1.0
-        normalised = round(max(-1.0, min(1.0, raw / 0.8)), 4)
+        # Normalise: map raw/0.8 from [-1, 1] → [0, 1], then clamp to (0, 1) exclusive
+        _EPS = 0.001
+        score_11 = max(-1.0, min(1.0, raw / 0.8))
+        score_01 = (score_11 + 1.0) / 2.0
+        normalised = round(max(_EPS, min(1.0 - _EPS, score_01)), 4)
         return normalised, breakdown, " | ".join(messages)

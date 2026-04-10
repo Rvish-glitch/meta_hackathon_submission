@@ -21,9 +21,9 @@ An [OpenEnv](https://openenv.dev)-compliant benchmark environment for evaluating
 
 | Task | Difficulty | Steps | Score Range |
 |---|---|---|---|
-| Email Triage | Easy | 1 | −1.0 → 1.0 |
-| Data Cleaning | Medium | ≤10 | 0.0 → 1.0 |
-| Code Review | Hard | ≤15 | −1.0 → 1.0 |
+| Email Triage | Easy | 1 | 0.001 → 0.999 |
+| Data Cleaning | Medium | ≤10 | 0.001 → 0.999 |
+| Code Review | Hard | ≤15 | 0.001 → 0.999 |
 
 ### Email Triage
 Classify 10 emails by **priority** (`urgent`/`normal`/`low`) and **category** (`action_required`/`fyi`/`spam`/`newsletter`). Special −0.10 penalty for marking an urgent email as spam.
