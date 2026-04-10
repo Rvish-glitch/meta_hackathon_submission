@@ -42,7 +42,7 @@ inference:
   requires_env:
     - HF_TOKEN
   optional_env:
-    - HF_BASE_URL
-    - MODEL_ID
-  default_model: meta-llama/Meta-Llama-3.1-8B-Instruct
+    - API_BASE_URL
+    - MODEL_NAME
+  default_model: Qwen/Qwen2.5-7B-Instruct
   default_base_url: https://router.huggingface.co/v1
