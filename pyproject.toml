@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "meta-hackathon-openenv"
+version = "1.0.0"
+description = "OpenEnv Benchmark for META Hackathon"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.0",
+    "openai>=1.0",
+    "gradio>=5.0",
+    "fastapi>=0.100",
+    "uvicorn>=0.20",
+    "openenv>=0.1.13",
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[project.optional-dependencies]
+dev = ["pytest"]
