@@ -121,11 +121,12 @@ class OpenEnvEnvironment:
             step=self._step_count,
             done=done,
         )
+        avg_reward = max(0.01, min(0.99, self._cumulative_reward / self._step_count))
         return StepResult(
             observation=obs,
             reward=reward_val,
             done=done,
-            info={**info, "cumulative_reward": self._cumulative_reward},
+            info={**info, "cumulative_reward": avg_reward},
         )
 
     def state(self) -> dict[str, Any]:
