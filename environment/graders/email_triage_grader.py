@@ -28,7 +28,7 @@ class EmailTriageGrader:
     ) -> tuple[float, dict[str, float], str]:
         """
         Returns (normalised_reward, breakdown, message).
-        normalised_reward is clamped to [-1, 1].
+        normalised_reward is clamped to (0.01, 0.99).
         """
         submitted: dict[str, dict] = {
             c["email_id"]: c for c in classifications if "email_id" in c
@@ -42,7 +42,6 @@ class EmailTriageGrader:
             pred = submitted.get(eid)
             if pred is None:
                 raw -= 0.05
-                breakdown[eid] = -0.05
                 messages.append(f"{eid}: missing")
                 continue
 
@@ -67,13 +66,14 @@ class EmailTriageGrader:
                 messages.append(f"{eid}: both wrong")
 
             raw += score
-            breakdown[eid] = score
+            # Only include positive scores in breakdown to keep values in (0, 1)
+            if score > 0:
+                breakdown[eid] = round(score, 4)
 
-        # Penalise extra phantom emails
+        # Penalise extra phantom emails (don't add to breakdown)
         for eid in submitted:
             if eid not in self._ground_truth:
                 raw -= 0.02
-                breakdown[eid] = -0.02
                 messages.append(f"{eid}: phantom email")
 
         # Normalise: map raw/0.8 from [-1, 1] → [0, 1], then clamp to (0, 1) exclusive

@@ -6,7 +6,7 @@ Scoring per bug:
   +0.05  fix description contains at least one correct keyword (case-insensitive)
   -0.05  false positive (bug_id not in seeded set, or duplicate report)
 
-Final score = sum / max_possible, clamped to [0, 1].
+Final score = sum / max_possible, clamped to [0.01, 0.99].
 max_possible = 5 bugs * (0.15 + 0.05) = 1.0
 """
 
@@ -24,7 +24,7 @@ class CodeReviewGrader:
     ) -> tuple[float, str]:
         """Incremental score for a single report (used during the episode)."""
         if bug_id not in self._bugs:
-            return -0.05, f"'{bug_id}' is not a known bug — false positive."
+            return 0.01, f"'{bug_id}' is not a known bug — false positive."
         bug = self._bugs[bug_id]
         text = (description + " " + fix).lower()
         kw_match = any(kw.lower() in text for kw in bug["fix_keywords"])
@@ -49,14 +49,12 @@ class CodeReviewGrader:
             fix = report.get("fix", "")
 
             if bug_id in seen:
-                breakdown[f"{bug_id}_dup"] = -0.05
                 total -= 0.05
                 messages.append(f"{bug_id}: duplicate report (-0.05)")
                 continue
             seen.add(bug_id)
 
             if bug_id not in self._bugs:
-                breakdown[bug_id] = -0.05
                 total -= 0.05
                 messages.append(f"{bug_id}: false positive (-0.05)")
                 continue
@@ -65,16 +63,15 @@ class CodeReviewGrader:
             text = (description + " " + fix).lower()
             kw_match = any(kw.lower() in text for kw in bug["fix_keywords"])
             score = 0.15 + (0.05 if kw_match else 0.0)
-            breakdown[bug_id] = score
+            breakdown[bug_id] = round(score, 4)
             total += score
             messages.append(
                 f"{bug_id}: +{score:.2f}" + (" (fix keyword matched)" if kw_match else "")
             )
 
-        # Missing bugs
+        # Missing bugs — only add to messages, not breakdown (to avoid 0.0 values)
         for bug_id in self._bugs:
             if bug_id not in seen:
-                breakdown[f"{bug_id}_missed"] = 0.0
                 messages.append(f"{bug_id}: missed (0)")
 
         _EPS = 0.01

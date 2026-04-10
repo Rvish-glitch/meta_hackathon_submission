@@ -209,6 +209,10 @@ class CodeReviewTask:
         action = payload.get("action", "")
         self._step += 1
 
+        # Always terminate with final grade when max steps reached
+        if self._step >= MAX_STEPS and action != "submit":
+            action = "submit"
+
         if action == "inspect":
             fname = payload.get("file", "")
             content = FILES.get(fname, f"File '{fname}' not found.")
@@ -230,18 +234,16 @@ class CodeReviewTask:
                 "content": f"Bug report '{bug_id}' recorded. {msg}",
                 "metadata": {"bug_id": bug_id, "incremental_score": incremental},
             }
-            done = self._step >= MAX_STEPS
-            self._done = done
-            return obs, Reward(value=incremental, breakdown={"report": incremental}, message=msg), done, {}
+            return obs, Reward(value=incremental, breakdown={"report": incremental}, message=msg), False, {}
 
-        elif action == "submit" or self._step >= MAX_STEPS:
+        elif action == "submit":
             final_reward, breakdown, message = self._grader.grade(self._reports)
             self._done = True
             obs = {
                 "content": f"Review complete. Score: {final_reward:.2f}\n{message}",
-                "metadata": {"breakdown": breakdown},
+                "metadata": {},
             }
-            return obs, Reward(value=final_reward, breakdown=breakdown, message=message), True, {}
+            return obs, Reward(value=final_reward, breakdown={}, message=message), True, {}
 
         else:
             obs = {"content": f"Unknown action '{action}'.", "metadata": {}}
