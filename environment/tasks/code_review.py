@@ -216,7 +216,7 @@ class CodeReviewTask:
                 "content": f"File: {fname}\n```python\n{content}```",
                 "metadata": {"file": fname},
             }
-            return obs, Reward(value=0.0, breakdown={}, message="File inspected."), False, {}
+            return obs, Reward(value=0.001, breakdown={}, message="File inspected."), False, {}
 
         elif action == "report_bug":
             bug_id = payload.get("bug_id", "").upper()
@@ -225,6 +225,7 @@ class CodeReviewTask:
             self._reports.append({"bug_id": bug_id, "description": description, "fix": fix})
 
             incremental, msg = self._grader.score_report(bug_id, description, fix)
+            incremental = max(0.001, min(0.999, incremental))
             obs = {
                 "content": f"Bug report '{bug_id}' recorded. {msg}",
                 "metadata": {"bug_id": bug_id, "incremental_score": incremental},
@@ -244,7 +245,7 @@ class CodeReviewTask:
 
         else:
             obs = {"content": f"Unknown action '{action}'.", "metadata": {}}
-            return obs, Reward(value=-0.02, breakdown={}, message="Invalid action."), False, {}
+            return obs, Reward(value=0.001, breakdown={}, message="Invalid action."), False, {}
 
     def state(self) -> dict[str, Any]:
         return {"step": self._step, "done": self._done, "reports": self._reports}

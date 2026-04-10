@@ -101,7 +101,7 @@ class DataCleaningTask:
             )
             self._current_csv = result_csv
         except Exception as exc:
-            op_reward = -0.05
+            op_reward = 0.001
             op_msg = f"Operation failed: {exc}"
 
         if op == "submit" or self._step >= MAX_STEPS:
@@ -119,8 +119,8 @@ class DataCleaningTask:
             }
             return obs, reward, True, {}
 
-        # Intermediate reward for a valid operation
-        intermediate = max(-0.05, min(0.05, op_reward))
+        # Intermediate reward for a valid operation (clamped to (0, 1) exclusive)
+        intermediate = max(0.001, min(0.999, op_reward))
         reward = Reward(
             value=intermediate,
             breakdown={"operation": intermediate},
