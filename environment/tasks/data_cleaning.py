@@ -239,9 +239,8 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
         return _to_csv(fieldnames, kept), 0.03 if removed > 0 else 0.0, f"Dropped {removed} outlier row(s) in '{col}'."
 
     elif op == "submit":
-        # Caller handles grading; return as-is
-        submitted = payload.get("csv", csv_text)
-        return submitted, 0.0, "Submission received."
+        # Always use the maintained CSV state, ignore any LLM-provided csv field
+        return csv_text, 0.01, "Submission received."
 
     else:
         raise ValueError(f"Unknown operation: '{op}'")

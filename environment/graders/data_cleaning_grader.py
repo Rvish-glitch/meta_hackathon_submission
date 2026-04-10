@@ -32,7 +32,7 @@ class DataCleaningGrader:
         try:
             fieldnames, rows = _parse(cleaned_csv)
         except Exception as exc:
-            return -1.0, {}, f"Could not parse CSV: {exc}"
+            return 0.01, {}, f"Could not parse CSV: {exc}"
 
         checks: dict[str, tuple[bool, str]] = {}
 
