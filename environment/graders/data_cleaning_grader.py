@@ -120,7 +120,7 @@ class DataCleaningGrader:
 
         passed = sum(1 for ok, _ in checks.values() if ok)
         total = len(checks)
-        _EPS = 0.001
+        _EPS = 0.01
         score = max(_EPS, min(1.0 - _EPS, passed / total))
         breakdown = {k: 1.0 / total if ok else 0.0 for k, (ok, _) in checks.items()}
         messages = [msg for _, (_, msg) in checks.items()]
