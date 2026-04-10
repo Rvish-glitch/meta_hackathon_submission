@@ -37,7 +37,7 @@ class Action(BaseModel):
 
 
 class Reward(BaseModel):
-    value: float = Field(ge=-1.0, le=1.0, description="Normalised reward in [-1, 1]")
+    value: float = Field(gt=0.0, lt=1.0, description="Normalised reward in (0, 1) exclusive")
     breakdown: dict[str, float] = Field(
         default_factory=dict, description="Per-criterion reward breakdown"
     )

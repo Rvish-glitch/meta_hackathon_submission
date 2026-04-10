@@ -175,7 +175,7 @@ def run_episode(task_name: TaskName, max_turns: int) -> None:
 
     except Exception as exc:
         last_error = str(exc)[:120]
-        log_step(step + 1, "exception", 0.0, True, last_error)
+        log_step(step + 1, "exception", 0.01, True, last_error)
     finally:
         log_end(success, step, rewards)
 
