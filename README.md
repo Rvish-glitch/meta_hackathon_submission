@@ -1,6 +1,5 @@
 ---
 title: Meta Hackathon OpenEnv Benchmark
-emoji: 🤖
 colorFrom: blue
 colorTo: purple
 sdk: docker
