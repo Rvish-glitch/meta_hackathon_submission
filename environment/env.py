@@ -131,10 +131,12 @@ class OpenEnvEnvironment:
 
     def state(self) -> dict[str, Any]:
         """Return the full internal state (for debugging / logging)."""
+        avg = (max(0.01, min(0.99, self._cumulative_reward / self._step_count))
+               if self._step_count > 0 else 0.01)
         return {
             "task": self.task_name,
             "step": self._step_count,
             "done": self._done,
-            "cumulative_reward": self._cumulative_reward,
+            "cumulative_reward": avg,
             "task_state": self._task.state(),
         }
