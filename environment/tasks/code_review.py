@@ -229,7 +229,7 @@ class CodeReviewTask:
             self._reports.append({"bug_id": bug_id, "description": description, "fix": fix})
 
             incremental, msg = self._grader.score_report(bug_id, description, fix)
-            incremental = max(0.01, min(0.999, incremental))
+            incremental = max(0.01, min(0.99, incremental))
             obs = {
                 "content": f"Bug report '{bug_id}' recorded. {msg}",
                 "metadata": {"bug_id": bug_id, "incremental_score": incremental},
