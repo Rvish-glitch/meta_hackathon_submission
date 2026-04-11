@@ -58,7 +58,9 @@ def log_step(step: int, action: Any, reward: float, done: bool, error: str | Non
 def log_end(success: bool, steps: int, rewards: list[float]) -> None:
     rewards_str = ",".join(f"{r:.2f}" for r in rewards)
     success_str = "true" if success else "false"
-    print(f"[END] success={success_str} steps={steps} rewards={rewards_str}", flush=True)
+    score = (sum(rewards) / len(rewards)) if rewards else 0.01
+    score = max(0.01, min(0.99, score))
+    print(f"[END] success={success_str} steps={steps} score={score:.2f} rewards={rewards_str}", flush=True)
 
 # ---------------------------------------------------------------------------
 # JSON parser — grabs the first complete JSON object, ignores trailing text
