@@ -8,7 +8,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from .tasks.email_triage import EmailTriageTask
 from .tasks.data_cleaning import DataCleaningTask
@@ -42,6 +42,21 @@ class Reward(BaseModel):
         default_factory=dict, description="Per-criterion reward breakdown"
     )
     message: str = Field(default="", description="Human-readable explanation")
+
+    @model_validator(mode="before")
+    @classmethod
+    def clamp_scores(cls, data: Any) -> Any:
+        """Safety net: ensure value and all breakdown values stay in (0, 1) exclusive."""
+        if isinstance(data, dict):
+            _EPS = 0.01
+            if "value" in data:
+                data["value"] = max(_EPS, min(1.0 - _EPS, float(data["value"])))
+            if "breakdown" in data and isinstance(data["breakdown"], dict):
+                data["breakdown"] = {
+                    k: max(_EPS, min(1.0 - _EPS, float(v)))
+                    for k, v in data["breakdown"].items()
+                }
+        return data
 
 
 class StepResult(BaseModel):

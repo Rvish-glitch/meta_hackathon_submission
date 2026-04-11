@@ -120,7 +120,7 @@ class DataCleaningTask:
             return obs, reward, True, {}
 
         # Intermediate reward for a valid operation (clamped to (0, 1) exclusive)
-        intermediate = max(0.01, min(0.999, op_reward))
+        intermediate = max(0.01, min(0.99, op_reward))
         reward = Reward(
             value=intermediate,
             breakdown={"operation": intermediate},
@@ -177,7 +177,7 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
                 seen.add(key)
                 unique.append(row)
         removed = len(rows) - len(unique)
-        return _to_csv(fieldnames, unique), 0.05 if removed > 0 else 0.0, f"Removed {removed} duplicate(s)."
+        return _to_csv(fieldnames, unique), 0.05 if removed > 0 else 0.01, f"Removed {removed} duplicate(s)."
 
     elif op == "fill_nulls":
         col = payload.get("column", "")
@@ -188,7 +188,7 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
             if col in row and row[col].strip().lower() in null_tokens:
                 row[col] = val
                 count += 1
-        return _to_csv(fieldnames, rows), 0.03 if count > 0 else 0.0, f"Filled {count} null(s) in '{col}'."
+        return _to_csv(fieldnames, rows), 0.03 if count > 0 else 0.01, f"Filled {count} null(s) in '{col}'."
 
     elif op == "fix_type":
         col = payload.get("column", "")
@@ -207,7 +207,7 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
                     count += 1
                 except ValueError:
                     pass
-        return _to_csv(fieldnames, rows), 0.03 if count > 0 else 0.0, f"Fixed {count} value(s) in '{col}'."
+        return _to_csv(fieldnames, rows), 0.03 if count > 0 else 0.01, f"Fixed {count} value(s) in '{col}'."
 
     elif op == "normalize_case":
         col = payload.get("column", "")
@@ -219,7 +219,7 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
                 row[col] = old.lower() if case == "lower" else old.upper() if case == "upper" else old.title()
                 if row[col] != old:
                     count += 1
-        return _to_csv(fieldnames, rows), 0.02 if count > 0 else 0.0, f"Normalised {count} value(s) in '{col}'."
+        return _to_csv(fieldnames, rows), 0.02 if count > 0 else 0.01, f"Normalised {count} value(s) in '{col}'."
 
     elif op == "drop_outliers":
         col = payload.get("column", "")
@@ -236,7 +236,7 @@ def _apply_operation(csv_text: str, payload: dict) -> tuple[str, float, str]:
             except ValueError:
                 pass
             kept.append(row)
-        return _to_csv(fieldnames, kept), 0.03 if removed > 0 else 0.0, f"Dropped {removed} outlier row(s) in '{col}'."
+        return _to_csv(fieldnames, kept), 0.03 if removed > 0 else 0.01, f"Dropped {removed} outlier row(s) in '{col}'."
 
     elif op == "submit":
         # Always use the maintained CSV state, ignore any LLM-provided csv field
